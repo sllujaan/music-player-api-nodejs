@@ -1,0 +1,12 @@
+
+###
+GET http://localhost:3000/audio/Alan Walker-The Spectre.mp3 HTTP/1.1
+Content-Type: audio/mpeg
+
+
+###
+GET http://localhost:3000/list HTTP/1.1
+
+
+###
+GET http://localhost:3000/music/tag/Alan%20Walker-The%20Spectre.mp3 HTTP/1.1
