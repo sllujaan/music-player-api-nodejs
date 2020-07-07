@@ -1,15 +1,11 @@
 {
-  "name": "nodeprojects",
+  "name": "musicplayer",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "gypfile": true,
+  "main": "server/server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
-    "devStart": "nodemon server/music_player.js",
-    "build": "node-gyp rebuild",
-    "clean": "node-gyp clean"
+    "devStart": "nodemon server/music_player.js"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +22,6 @@
   },
   "devDependencies": {
     "jest": "^26.1.0",
-    "node-gyp": "^6.1.0",
     "nodemon": "^2.0.2"
   }
 }
