@@ -16,14 +16,6 @@ const DIR_URL = assets+'music/'
 const FILE_EXTENSIONS_REGEX = /.mp3|wma/gi
 
 app.use(cors())
-/*app.use('/music', express.static('C:/Users/Subhan/nodeProjects/assets/music'))*/
-
-//app.use('/assets', express.static(__dirname + '/assets'))
-/*
-app.use('/assets', (req, res) => {
-    console.log(__dirname + '/assets')
-    //res.send('static routing....')
-})*/
 
 var MUSICS_LIST = null
 var MUSICS_LIST_READY = false
@@ -386,23 +378,6 @@ var validateFile = async (fileName, extensionsRegEx) => {
 
 
 
-/*
-const httpUrl = `http://localhost:3000/musics/list`
-musics_list_api(httpUrl)
-.then(data => {
-    console.log(data)
-})
-.catch(err => {
-    console.log("catch err = ", err)
-})
-*/
-
-
-
-module.exports = { musics_list_api }
-
-
-
 var prepareMusicsList = () => {
 
     return new Promise((resolve, reject) => {
@@ -587,32 +562,6 @@ setInterval(() => {
     console.log(`updated------------------------------------`)
 }, 60000);
 
-
-/* var list = async () => {
-    try{
-        const list = await prepareMusicsList()
-        console.log(`list == `, list)
-    }
-    catch(err) {
-        console.log(`[ERROR::list] ${err}`)
-    }
-}
-
-list() */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* getTag('aa.mp3')
 .then(data => {
     console.log(data)
@@ -629,8 +578,9 @@ module.exports = {getTag, prepareMusicsList}
 
 
 
-app.listen(3000)
-console.log(`listening to http://localhost:3000`)
+const PORT = process.env.PORT || 3000
+app.listen(PORT)
+console.log(`listning to http://localhost:${PORT}/`)
 
 
 
