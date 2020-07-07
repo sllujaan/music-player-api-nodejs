@@ -5,9 +5,13 @@ var cors = require('cors')
 var path = require('path');
 const nodeID3 =  require('node-id3')
 var http = require('http');
-const { promises } = require('dns');
 
-var assets = 'C:/Users/Subhan/nodeProjects/assets/'
+var CURRENT_DIR = __dirname
+const PATH = CURRENT_DIR.replace(/\\/gi, '/')
+
+console.log(PATH)
+
+var assets = PATH + '/assets/'
 const DIR_URL = assets+'music/'
 const FILE_EXTENSIONS_REGEX = /.mp3|wma/gi
 
@@ -308,12 +312,8 @@ var walkSync = async function(dir, filelist) {
                 if(!isMusicFile) return
 
                 const rootPath = dir + "/" +file
-                const regEx = /(C:\/Users\/Subhan\/nodeProjects\/assets\/music\/)/gi
+                const regEx = new RegExp(DIR_URL, 'gi')
                 const newPath = rootPath.replace(regEx, "")
-                //console.log("newPaths = ", newPaths)
-                //console.log("fileList = " + filelist)
-                console.log(path.extname(newPath))
-
 
                 filelist.push(newPath)
             }
@@ -483,7 +483,10 @@ var getTag = async (musicName) => {
                 //console.log(tag)
                 //return res.status(200).end(JSON.stringify(tag))
                 const {title, year, image: {imageBuffer}} = tag
-                return resolve({musicName: musicName, title: title, year: year, imageUrl: `cover/${musicName}`})
+                
+                const name = path.basename(musicName)
+
+                return resolve({musicName: name, musicPath: musicName, title: title, year: year, imageUrl: `cover/${musicName}`})
             }
             //return res.status(500).end("Internal Server Error.")
             //return reject(`\n[ERROR_getTag]::No tag found.\n`)
@@ -600,7 +603,7 @@ list() */
 
 
 
-/* getTag('zz.txt')
+/* getTag('Alan Walker-The Spectre.mp3')
 .then(data => {
     console.log(data)
 })
