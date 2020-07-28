@@ -17,7 +17,7 @@
 
 
 var LIST = [1, 2, 3]
-var IS_LIST_READY = false
+var IS_LIST_READY = true
 
 const _getList = () => {
     if(IS_LIST_READY) return LIST

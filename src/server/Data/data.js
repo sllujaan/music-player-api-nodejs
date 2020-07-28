@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-const express = require('express');
-const list = express();
-var { Supplier } = require('../../business/api/supplier')
+const list = require('./list')
 
-list.get('/list/:page?', (req, res) => {
-    const _supplier = new Supplier()
-    res.send(_supplier.getList())
-})
+class DATA {
 
-module.exports = list
+    constructor() {}
+
+    getList() {return list._getList()}
+}
+
+module.exports = {DATA}
