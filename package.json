@@ -2,10 +2,12 @@
   "name": "musicplayer",
   "version": "1.0.0",
   "description": "",
-  "main": "server/server.js",
+  "main": "src/server/index.js",
   "scripts": {
     "test": "jest",
-    "devStart": "nodemon server/music_player.js"
+    "devA":"nodemon src/server/index.js",
+    "devStart": "nodemon server/music_player.js",
+    "devTest": "nodemon server/playLists.js"
   },
   "keywords": [],
   "author": "",

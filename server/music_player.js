@@ -5,6 +5,7 @@ var cors = require('cors')
 var path = require('path');
 const nodeID3 =  require('node-id3')
 var http = require('http');
+const playLists = require('./playLists')
 
 var CURRENT_DIR = __dirname
 const PATH = CURRENT_DIR.replace(/\\/gi, '/')
@@ -119,6 +120,14 @@ app.get('/', (req, res) => {
         res.json({name:"hello"})
     }, 2000);
 })
+
+app.get('/albums', (req, res) => {
+    const albums = playLists.getAlbums(MUSICS_LIST)
+    console.log(albums)
+    res.json(albums)
+})
+
+
 
 app.get('/testjson', (req, res) => {
     res.json({name:"johnson"})
