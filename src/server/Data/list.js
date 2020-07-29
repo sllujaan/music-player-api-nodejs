@@ -24,4 +24,4 @@ const _getList = () => {
     else return []
 }
 
-module.exports = {_getList}
+module.exports = {_getList, IS_LIST_READY}

@@ -16,15 +16,19 @@
  */
 
 
-const { DATA } = require('../../Data/data')
+const { _data, DATA } = require('../../Data/data')
 
-class Supplier {
-
+class Supplier extends DATA  {
+    
     constructor() {
-        this.data = new DATA()
+        super();
+        //this.data = _data
+        //this.listReady = this.data.listReady
     }
 
-    getList() {return this.data.getList()}
+    getList() {return super.getList() }
 }
 
-module.exports = { Supplier }
+const _supplier = new Supplier()
+
+module.exports = { _supplier }

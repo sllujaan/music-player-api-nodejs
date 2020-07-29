@@ -342,9 +342,7 @@ var walkSync = async function(dir, filelist) {
 var getSubArray = (page, maxFiles, arr) => {
     const endIndex = (page * maxFiles)
     const startIndex = (endIndex - maxFiles)
-
     const subArr = arr.slice(startIndex, endIndex)
-
     return subArr
 }
 

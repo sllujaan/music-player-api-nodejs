@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-const list = require('./list')
-
-class DATA {
-
-    constructor() {
-        this.listReady = list.IS_LIST_READY
+class Function {
+    constructor() {}
+    
+    getSubArray = (page, maxFiles, arr) => {
+        const endIndex = (page * maxFiles)
+        const startIndex = (endIndex - maxFiles)
+        const subArr = arr.slice(startIndex, endIndex)
+        return subArr
     }
-
-    getList() {return list._getList()}
 }
 
-const _data = new DATA()
+const _function = new Function()
 
-module.exports = { _data, DATA }
+
+
+module.exports = { _function }

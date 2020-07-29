@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-const list = require('./list')
+class Validator {
+    constructor () {}
 
-class DATA {
-
-    constructor() {
-        this.listReady = list.IS_LIST_READY
+    /**
+     * Validated the given number .
+     * @param {number} value 
+     * @param {number?} min 
+     * @param {number} max 
+     */
+    validateNumber(value, min, max) {
+        if(value && isNaN(parseInt(value))) return false
+        if((value < min) || (value > max)) return false
+        return true
     }
 
-    getList() {return list._getList()}
+    validateString() {
+
+    }
+    
 }
 
-const _data = new DATA()
+const _validator = new Validator()
 
-module.exports = { _data, DATA }
+module.exports = { _validator }

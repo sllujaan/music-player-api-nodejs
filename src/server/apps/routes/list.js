@@ -17,10 +17,18 @@
 
 const express = require('express');
 const list = express();
-var { Supplier } = require('../../business/api/supplier')
+const { _supplier } = require('../../business/api/supplier')
+const { _validator } = require('../../validator/validator')
+const { _function } = require('../../business/logic/functions')
 
 list.get('/list/:page?', (req, res) => {
-    const _supplier = new Supplier()
+    //check whether the list is ready or not.
+    if(!_supplier.listReady) return res.status(503).end("server busy! try later.")
+    //validate page number from parameter.
+    if(!_validator.validateNumber(req.params.page, 1)) return res.status(400).end("invalid parameters!")
+    //send page to user if parameter provided.
+    if(req.params.page) return res.status(200).send( _function.getSubArray(req.params.page, 1, _supplier.getList()) )
+    //Now send the list to user.
     res.send(_supplier.getList())
 })
 
