@@ -33,6 +33,17 @@ class Validator {
     validateString() {
 
     }
+
+    /**
+     * validate file from given extension
+     * @param {string} fileName 
+     * @param {RegEx} extensionsRegEx 
+     */
+    validateFile = async (fileName, extensionsRegEx) => {
+        var res = fileName.match(extensionsRegEx)
+        if(!res) return false
+        else return true
+    }
     
 }
 

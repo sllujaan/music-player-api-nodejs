@@ -14,16 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const { DIR_URL } = require('../assets')
+const { _file } = require('../files/file')
 
 class Function {
     constructor() {}
     
+    /**
+     * return subarray from the given array.
+     * @param {Number} page 
+     * @param {Number} maxFiles 
+     * @param {Array} arr 
+     */
     getSubArray = (page, maxFiles, arr) => {
         const endIndex = (page * maxFiles)
         const startIndex = (endIndex - maxFiles)
         const subArr = arr.slice(startIndex, endIndex)
         return subArr
     }
+
+    getlist() {
+        _file.walkSync(DIR_URL)
+    }
+
 }
 
 const _function = new Function()
