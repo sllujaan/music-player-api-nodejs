@@ -17,6 +17,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const nodeID3 = require('node-id3')
 const { _validator } = require('../../validator/validator')
 
 class FILE {
@@ -32,12 +33,35 @@ class FILE {
         //walker sync funtion returns all file in directory
         return await walkSync(dirUrl, null, dirUrl)
     }
+
+    /**
+     * reads tag of file
+     * @param {string} dirUrl
+     * @param {string} name 
+     */
+    readTag = async (dirUrl, name) => {
+        try{
+            const tag = await getTag(dirUrl, name)
+            return tag
+            //if(Object.keys(tag).length > 0) console.log(tag)
+        }
+        catch(err) {
+            console.log("ERROR::", err)
+        }
+    }
     
 
 }
 
 
 
+/**
+ * reads files and subfiles.
+ * @param {string} dir
+ * @param {string} filelist
+ * @param {string} ROOT_DIR
+ * 
+ */
 walkSync = async (dir, filelist, ROOT_DIR) => {
     try {
         //replace backward slashes \\ to forward / slash
@@ -67,6 +91,25 @@ walkSync = async (dir, filelist, ROOT_DIR) => {
     }
 }
 
+
+/**
+ * return the tag of mp3 file
+ * @param {string} rootPath
+ * @param {string} musicName
+ */
+var getTag = async (rootPath, musicName) => {
+    return new Promise((resolve, reject) => {
+        nodeID3.read(rootPath+"/"+musicName, (err, tag) => {  
+            if(err) reject(err)
+            if(tag) {
+                const {title, artist, album, year, genre} = tag
+                const name = path.basename(musicName)
+                resolve({musicName: name, musicPath: musicName, title: title, artist:artist, album:album, year: year, genre:genre, imageUrl: `cover/${musicName}`})
+            }
+            return resolve({})
+        })
+    })
+}
 
 
 const _file = new FILE()

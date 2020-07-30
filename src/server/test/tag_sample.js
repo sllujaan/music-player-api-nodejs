@@ -58,40 +58,37 @@ var getTag = async (musicName) => {
 
 
 
-
+const path = require('path')
 
 //--------------------------------------------------------------------------------------------------------------------
-var getTagSample = async (musicName) => {
-
+var getTagSample = async (rootPath, musicName) => {
     return new Promise((resolve, reject) => {
-        nodeID3.read(musicName, (err, tag) => {  
+        nodeID3.read(rootPath+"/"+musicName, (err, tag) => {  
             if(err) reject(err)
-    
             if(tag) {
-                console.log(tag)
-                resolve(tag)
-                /* const {title, year} = tag
-                
+                const {title, artist, album, year, genre} = tag
                 const name = path.basename(musicName)
-
-                return resolve({musicName: name, musicPath: musicName, title: title, year: year, imageUrl: `cover/${musicName}`}) */
+                resolve({musicName: name, musicPath: musicName, title: title, artist:artist, album:album, year: year, genre:genre, imageUrl: `cover/${musicName}`})
             }
             return resolve({})
         })
     })
-
-    
 }
 
 
 
-const getTags = async () => {
+
+var base = "C:/Users/Subhan/OneDrive/HTML_CSS_JAVASCRIPT/__gitProjects__/music-player-api-nodejs/src/server/assets/music/"
+const name = "walker/Alan Walker-The Spectre.mp3"
+
+const getTags = async (base, name) => {
     try{
-        const tag = await getTagSample('abc')
+        const tag = await getTagSample(base, name)
+        if(Object.keys(tag).length > 0) console.log(tag)
     }
     catch(err) {
         console.log("ERROR::", err)
     }
 }
 
-getTags()
+getTags(base, name)

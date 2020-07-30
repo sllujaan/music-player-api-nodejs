@@ -16,6 +16,7 @@
  */
 const { _file } = require('../business/files/file')
 const { DIR_URL } = require('../business/assets')
+const list = require('../apps/routes/list')
 
 var LIST = [1, 2, 3]
 var IS_LIST_READY = true
@@ -31,14 +32,22 @@ const isListReady = () =>{
 
 const initList = async () => {
     try{
+        var tempList = []
         IS_LIST_READY = false
-        const _list = await _file.readDir(DIR_URL);
-        
+        //reading the directory and getting files names
+        const _list = await _file.readDir(DIR_URL); //returns an array
+        if(_list && _list.length === 0) return
+        //reading tag for each file
+        _list.forEach(async (name) => {
+            const tag = await _file.readTag(DIR_URL, name)
+            if(tag && Object.keys(tag).length > 0) tempList.push(tag)
+        });
+        //now assign temporaray list to global list
         IS_LIST_READY = true
-        //console.log(_list)
-        LIST = _list
+        LIST = tempList
     }
     catch(err) {
+        IS_LIST_READY = false
         LIST =  []
         console.log("ERROR::", err)
     }
