@@ -15,20 +15,4 @@
  * limitations under the License.
  */
 
-const express = require('express');
-const route = express();
-
-route.use(require('./list'))
-route.use(require('./cover'))
-
-
-
-
-route.get('/', (req, res) => {
-    res.end('root works')
-})
-route.get('*', (req, res) => {
-    res.end('not found works')
-})
-
-module.exports = route
+ 

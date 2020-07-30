@@ -16,19 +16,11 @@
  */
 
 const express = require('express');
-const route = express();
+const cover = express();
 
-route.use(require('./list'))
-route.use(require('./cover'))
-
-
-
-
-route.get('/', (req, res) => {
-    res.end('root works')
-})
-route.get('*', (req, res) => {
-    res.end('not found works')
+cover.get('/cover/:name*', (req, res) => {
+    res.end('cover works')
 })
 
-module.exports = route
+
+module.exports = cover

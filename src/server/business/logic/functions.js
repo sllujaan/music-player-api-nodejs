@@ -36,6 +36,7 @@ class Function {
     getlist() {
         _file.walkSync(DIR_URL)
     }
+    
 
 }
 

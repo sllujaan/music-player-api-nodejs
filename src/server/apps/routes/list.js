@@ -27,7 +27,7 @@ list.get('/list/:page?', (req, res) => {
     //validate page number from parameter.
     if(!_validator.validateNumber(req.params.page, 1)) return res.status(400).end("invalid parameters!")
     //send page to user if parameter provided.
-    if(req.params.page) return res.status(200).send( _function.getSubArray(req.params.page, 1, _supplier.getList()) )
+    if(req.params.page) return res.status(200).send( _function.getSubArray(req.params.page, 10, _supplier.getList()) )
     //Now send the list to user.
     res.send(_supplier.getList())
 })

@@ -18,7 +18,9 @@
 const fs = require('fs')
 const path = require('path')
 const nodeID3 = require('node-id3')
+var Jimp = require('jimp');
 const { _validator } = require('../../validator/validator')
+const { COMPRESSED_IMAGES_PATH } = require('../assets')
 
 class FILE {
     constructor() {}
@@ -48,6 +50,28 @@ class FILE {
         catch(err) {
             console.log("ERROR::", err)
         }
+    }
+
+    /**
+     * 
+     * @param {string} buffer 
+     * @param {string} savePath 
+     */
+    compressImage = async (buffer, savePath) => {
+        Jimp.read(buffer)
+        .then(image => {
+            // Do stuff with the image.
+            image
+            .resize(Jimp.AUTO, 200) // resize the height to 250 and scale the width accordingly
+            .quality(20)// set JPEG quality
+            //.greyscale() // set greyscale
+            .write(savePath); // save
+            //console.log('image compressed')
+        })
+        .catch(err => {
+            // Handle an exception.
+            //console.log("ERROR::", err);
+        });
     }
     
 
@@ -99,12 +123,15 @@ walkSync = async (dir, filelist, ROOT_DIR) => {
  */
 var getTag = async (rootPath, musicName) => {
     return new Promise((resolve, reject) => {
-        nodeID3.read(rootPath+"/"+musicName, (err, tag) => {  
+        nodeID3.read(rootPath+"/"+musicName, async (err, tag) => {  
             if(err) reject(err)
             if(tag) {
-                const {title, artist, album, year, genre} = tag
+                const {title, artist, album, year, genre, image} = tag
                 const name = path.basename(musicName)
-                resolve({musicName: name, musicPath: musicName, title: title, artist:artist, album:album, year: year, genre:genre, imageUrl: `cover/${musicName}`})
+                //if image compress it and save it for later use
+                if(image && image.imageBuffer) await _file.compressImage(image.imageBuffer, `${COMPRESSED_IMAGES_PATH + musicName}.jpg`)
+
+                resolve({musicName: name, musicPath: musicName, title: title, artist:artist, album:album, year: year, genre:genre, imageUrl: `cover${musicName}.jpg`})
             }
             return resolve({})
         })
