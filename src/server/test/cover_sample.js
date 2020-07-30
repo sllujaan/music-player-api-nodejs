@@ -15,4 +15,34 @@
  * limitations under the License.
  */
 
- 
+const fs = require('fs')
+const { COMPRESSED_IMAGES_PATH } = require('../business/assets')
+
+
+
+const getImageCover = async (rootpath, name) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(rootpath+"/"+name, (err, data) => {
+            if(err) reject(err)
+            resolve(data)
+        })
+    })
+}
+
+
+/* try{
+    getImageCover(COMPRESSED_IMAGES_PATH, 'cover/on_my_way.mp3.jpg')
+}
+catch(err) {
+    console.log("ERROR::", err)
+} */
+
+
+getImageCover(COMPRESSED_IMAGES_PATH, 'cover/on_my_way.mp3.jpg')
+.then(data => {
+    //data
+    console.log(data)
+})
+.catch(err => {
+    console.log("ERROR::", err)
+})

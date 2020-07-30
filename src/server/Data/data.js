@@ -16,6 +16,8 @@
  */
 
 const list = require('./list')
+const { _file } = require('../business/files/file')
+const { COMPRESSED_IMAGES_PATH } = require('../business/assets')
 
 class DATA {
 
@@ -26,6 +28,29 @@ class DATA {
     }
 
     getList() {return list._getList()}
+
+    readImage(name) {
+        
+        return new Promise((resolve, reject) => {
+            _file.getImageCover(COMPRESSED_IMAGES_PATH, name)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err => {
+                _file.getImageCover(COMPRESSED_IMAGES_PATH, 'cover/default.jpg')
+                .then(data => {
+                    resolve(data)
+                })
+                .catch(err => {
+                    reject('no such file')
+                })
+            })
+        })
+        
+
+    }
+
+    
 }
 
 const _data = new DATA()

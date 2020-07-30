@@ -73,7 +73,21 @@ class FILE {
             //console.log("ERROR::", err);
         });
     }
-    
+
+
+    /**
+     * reads image from the server
+     * @param {string} rootpath 
+     * @param {string} name 
+     */
+    getImageCover = async (rootpath, name) => {
+        return new Promise((resolve, reject) => {
+            fs.readFile(rootpath+"/"+name, (err, data) => {
+                if(err) reject(err)
+                resolve(data)
+            })
+        })
+    }
 
 }
 

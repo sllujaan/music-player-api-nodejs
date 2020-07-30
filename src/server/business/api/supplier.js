@@ -26,6 +26,19 @@ class Supplier extends DATA  {
 
     getList() {return super.getList() }
     isListReady() { return super.isListReady() }
+
+    getImage(name) {
+        return new Promise((resolve, reject) => {
+            super.readImage(name)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err => {
+                reject(err)
+            })
+        })
+        
+    } 
 }
 
 const _supplier = new Supplier()

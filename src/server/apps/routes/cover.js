@@ -17,9 +17,23 @@
 
 const express = require('express');
 const cover = express();
+const { _supplier } = require('../../business/api/supplier')
+
 
 cover.get('/cover/:name*', (req, res) => {
-    res.end('cover works')
+
+    const name = req.params.name + req.params[0]
+
+    _supplier.getImage(name)
+    .then(data => {
+        res.writeHead(200, {'Content-Type': 'image/jpeg'})
+        res.end(data)
+    })
+    .catch(err => {
+        console.log("ERROR::", err)
+        res.status(404).end('not found')
+    })
+
 })
 
 
