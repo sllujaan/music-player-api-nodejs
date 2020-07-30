@@ -19,8 +19,10 @@ const list = require('./list')
 
 class DATA {
 
-    constructor() {
-        this.listReady = list.IS_LIST_READY
+    constructor() {}
+
+    isListReady() {
+        return list.isListReady()
     }
 
     getList() {return list._getList()}

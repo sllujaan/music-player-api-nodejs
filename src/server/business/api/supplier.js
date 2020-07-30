@@ -22,11 +22,10 @@ class Supplier extends DATA  {
     
     constructor() {
         super();
-        //this.data = _data
-        //this.listReady = this.data.listReady
     }
 
     getList() {return super.getList() }
+    isListReady() { return super.isListReady() }
 }
 
 const _supplier = new Supplier()

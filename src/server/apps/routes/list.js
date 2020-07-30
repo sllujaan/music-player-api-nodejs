@@ -23,7 +23,7 @@ const { _function } = require('../../business/logic/functions')
 
 list.get('/list/:page?', (req, res) => {
     //check whether the list is ready or not.
-    if(!_supplier.listReady) return res.status(503).end("server busy! try later.")
+    if(!_supplier.isListReady()) return res.status(503).end("server busy! try later.")
     //validate page number from parameter.
     if(!_validator.validateNumber(req.params.page, 1)) return res.status(400).end("invalid parameters!")
     //send page to user if parameter provided.

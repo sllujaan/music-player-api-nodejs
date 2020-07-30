@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
+ const path = require('path')
 
-const CURRENT_DIR = __dirname
+
+const CURRENT_DIR = path.join(__dirname, '..')
 const PATH = CURRENT_DIR.replace(/\\/gi, '/')
 const assets = PATH + '/assets/'
 const DIR_URL = assets+'music/'
 const FILE_EXTENSIONS_REGEX = /.mp3|wma/gi
 
+console.log(DIR_URL)
 module.exports = {DIR_URL, FILE_EXTENSIONS_REGEX}

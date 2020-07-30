@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+const { _file } = require('../business/files/file')
+const { DIR_URL } = require('../business/assets')
 
 var LIST = [1, 2, 3]
 var IS_LIST_READY = true
@@ -24,4 +25,27 @@ const _getList = () => {
     else return []
 }
 
-module.exports = {_getList, IS_LIST_READY}
+const isListReady = () =>{
+    return IS_LIST_READY
+}
+
+const initList = async () => {
+    try{
+        IS_LIST_READY = false
+        const _list = await _file.readDir(DIR_URL);
+        
+        IS_LIST_READY = true
+        //console.log(_list)
+        LIST = _list
+    }
+    catch(err) {
+        LIST =  []
+        console.log("ERROR::", err)
+    }
+}
+
+
+initList()
+console.log('list initiated')
+
+module.exports = {_getList, IS_LIST_READY, isListReady}
