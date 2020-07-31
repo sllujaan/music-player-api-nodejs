@@ -20,9 +20,10 @@ const cover = express();
 const { _supplier } = require('../../business/api/supplier')
 
 
-cover.get('/cover/:name*', (req, res) => {
+cover.get('/:name*', (req, res) => {
 
     const name = req.params.name + req.params[0]
+    console.log(name)
 
     _supplier.getImage(name)
     .then(data => {

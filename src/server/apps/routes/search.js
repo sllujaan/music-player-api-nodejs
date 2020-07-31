@@ -18,7 +18,7 @@
 const express = require('express');
 const list = express();
 
-list.get('/search', (req, res) => {
+list.get('', (req, res) => {
     res.end('search works')
 })
 

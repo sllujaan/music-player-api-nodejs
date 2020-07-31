@@ -32,7 +32,8 @@ class DATA {
     readImage(name) {
         
         return new Promise((resolve, reject) => {
-            _file.getImageCover(COMPRESSED_IMAGES_PATH, name)
+            console.log(COMPRESSED_IMAGES_PATH + '/cover/'+name)
+            _file.getImageCover(COMPRESSED_IMAGES_PATH, '/cover/'+name)
             .then(data => {
                 resolve(data)
             })
