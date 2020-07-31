@@ -21,7 +21,7 @@ const { _supplier } = require('../../business/api/supplier')
 const { _validator } = require('../../validator/validator')
 const { _function } = require('../../business/logic/functions')
 
-list.get('/', (req, res) => {
+list.get('/:page?', (req, res) => {
     //check whether the list is ready or not.
     if(!_supplier.isListReady()) return res.status(503).end("server busy! try later.")
     //validate page number from parameter.
