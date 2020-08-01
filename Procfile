@@ -1,1 +1,1 @@
-web: node server/music_player.js
+web: node src/server/index.js
