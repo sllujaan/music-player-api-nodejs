@@ -28,31 +28,39 @@ const validateArray = (arr) => {
 }
 
 
-//return
+/**
+ * 
+ * @param {Array} LIST 
+ * @param {Array} arrToSearch
+ * @returns {Array} return an array
+ */
 const searchList = (LIST, arrToSearch) => {
-    if(!LIST || !Array.isArray(LIST)) return []
-    if(!validateArray(arrToSearch)) return [];
-    
-
-    const UNIQUE_SEARCH_STR = arrToSearch.join("|").replace(/\s/gi, "|")
-    const regex = new RegExp(UNIQUE_SEARCH_STR, 'gi')
-    const arrSearchFounds = []
-    
-    LIST.forEach(({musicName, title, artist, album, year, genre}, index) => {
-        const str = `${musicName} ${title} ${artist} ${album} ${year} ${genre}`
-        const arr = str.match(regex)
-        if(arr && arr.length > 0) arrSearchFounds.push(LIST[index])
+    return new Promise((resolve, reject) => {
+        if(!LIST || !Array.isArray(LIST)) reject('list must be an array.')
+        if(!validateArray(arrToSearch)) reject('arrToSearch must be an array.')
+        
+        const UNIQUE_SEARCH_STR = arrToSearch.join("|").replace(/\s/gi, "|")
+        const regex = new RegExp(UNIQUE_SEARCH_STR, 'gi')
+        const arrSearchFounds = []
+        
+        LIST.forEach(({musicName, title, artist, album, year, genre}, index) => {
+            const str = `${musicName} ${title} ${artist} ${album} ${year} ${genre}`
+            const arr = str.match(regex)
+            if(arr && arr.length > 0) arrSearchFounds.push(LIST[index])
+        })
+        resolve(arrSearchFounds)
     })
-    
-    console.log(arrSearchFounds)
-    console.log('done')
 }
 
 
 
-searchList(list, ['ab'])
-
-
+searchList(list, ['17'])
+.then(data => {
+    console.log(data)
+})
+.catch(err => {
+    console.log(err)
+})
 
 
 

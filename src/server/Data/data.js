@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+'use strict'
 const list = require('./list')
 const { _file } = require('../business/files/file')
 const { COMPRESSED_IMAGES_PATH } = require('../business/assets')
@@ -47,9 +48,9 @@ class DATA {
                 })
             })
         })
-        
-
     }
+
+    searchList = (_list, arrToSearch) => {return list.searchList(_list, arrToSearch)}
 
     
 }

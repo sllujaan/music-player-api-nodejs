@@ -19,8 +19,8 @@ const express = require('express');
 const route = express();
 
 route.use('/list', require('./list'))
-route.use('/cover', require('./cover'))
-route.use('/search', require('./search'))
+route.use('/list/cover', require('./cover'))
+route.use('/list/search', require('./search'))
 
 
 

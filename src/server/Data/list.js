@@ -18,7 +18,7 @@
 
 const { _file } = require('../business/files/file')
 const { DIR_URL } = require('../business/assets')
-const list = require('../apps/routes/list')
+const { _validator } = require('../validator/validator')
 
 var LIST = [1, 2, 3]
 var IS_LIST_READY = true
@@ -32,6 +32,9 @@ const isListReady = () =>{
     return IS_LIST_READY
 }
 
+/**
+ * intializes list
+ */
 const initList = async () => {
     try{
         var tempList = []
@@ -56,7 +59,34 @@ const initList = async () => {
 }
 
 
+/**
+ * 
+ * @param {Array} LIST 
+ * @param {Array} arrToSearch
+ * @returns {Array} return an array
+ */
+const searchList = (LIST, arrToSearch) => {
+    return new Promise((resolve, reject) => {
+        if(!LIST || !Array.isArray(LIST)) reject('list must be an array.')
+        if(!_validator.validateArray(arrToSearch)) reject('arrToSearch must be an array.')
+        
+        const UNIQUE_SEARCH_STR = arrToSearch.join("|").replace(/\s/gi, "|")
+        const regex = new RegExp(UNIQUE_SEARCH_STR, 'gi')
+        const arrSearchFounds = []
+        
+        LIST.forEach(({musicName, title, artist, album, year, genre}, index) => {
+            const str = `${musicName} ${title} ${artist} ${album} ${year} ${genre}`
+            const arr = str.match(regex)
+            if(arr && arr.length > 0) arrSearchFounds.push(LIST[index])
+        })
+        resolve(arrSearchFounds)
+    })
+}
+
+
+
+
 initList()
 console.log('list initiated')
 
-module.exports = {_getList, IS_LIST_READY, isListReady}
+module.exports = {_getList, IS_LIST_READY, isListReady, searchList}

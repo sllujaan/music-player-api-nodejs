@@ -44,6 +44,15 @@ class Validator {
         if(!res) return false
         else return true
     }
+
+    /**
+     * validates the given array
+     * @param {Array} arr 
+     */
+    validateArray = (arr) => {
+        if(arr && Array.isArray(arr) && arr.length > 0) return true;
+        else return false;
+    }
     
 }
 

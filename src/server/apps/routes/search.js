@@ -22,11 +22,17 @@ const { _supplier } = require('../../business/api/supplier')
 list.get('/:name', (req, res) => {
     
     const name = req.params.name
+    //1. check if list ready or not
     if(!_supplier.isListReady()) return res.status(503).end("server busy! try later.")
 
-    
-
-    res.end('search works')
+    _supplier.searchList(_supplier.getList(), name.split(' '))
+    .then(arr => {
+        if(Array.isArray(arr)) return res.status(200).send(arr)
+    })
+    .catch(err => {
+        console.log(err)
+        return res.status(500).end('server error!')
+    })
     
 })
 
