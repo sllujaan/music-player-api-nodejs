@@ -5,6 +5,7 @@ var cors = require('cors')
 var path = require('path');
 const nodeID3 =  require('node-id3')
 var http = require('http');
+const playLists = require('./playLists')
 
 var CURRENT_DIR = __dirname
 const PATH = CURRENT_DIR.replace(/\\/gi, '/')
@@ -91,10 +92,17 @@ app.get('/cover/:name*', async (req, res) => {
     try{
         const tag = await getImageBuffer(musicName)
         
-        //console.log(imageBuffer)
-        res.writeHead(200, {'content-type': 'image/jpeg'})
-        res.write(tag.imageBuffer,'binary');
-        res.end(null, 'binary');
+        if(tag && Buffer.isBuffer(tag.imageBuffer)) {
+            //console.log(imageBuffer)
+            res.writeHead(200, {'content-type': 'image/jpeg'})
+            res.write(tag.imageBuffer,'binary');
+            res.end(null, 'binary');
+        }
+        else {
+            res.status(404).json({status: 'not-found'})
+        }
+
+        
     }
     catch(err) {
         console.log(err)
@@ -112,6 +120,14 @@ app.get('/', (req, res) => {
         res.json({name:"hello"})
     }, 2000);
 })
+
+app.get('/albums', (req, res) => {
+    const albums = playLists.getAlbums(MUSICS_LIST)
+    console.log(albums)
+    res.json(albums)
+})
+
+
 
 app.get('/testjson', (req, res) => {
     res.json({name:"johnson"})
@@ -326,9 +342,7 @@ var walkSync = async function(dir, filelist) {
 var getSubArray = (page, maxFiles, arr) => {
     const endIndex = (page * maxFiles)
     const startIndex = (endIndex - maxFiles)
-
     const subArr = arr.slice(startIndex, endIndex)
-
     return subArr
 }
 
@@ -424,8 +438,9 @@ var getImageBuffer = async (musicName) => {
             if(tag) {
                 //console.log(tag)
                 //return res.status(200).end(JSON.stringify(tag))
-                const {image: {imageBuffer}} = tag
-                return resolve({imageBuffer: imageBuffer})
+                //const {image: {imageBuffer}} = tag
+                if(tag.image && tag.image.imageBuffer) return resolve({imageBuffer: tag.image.imageBuffer})
+                else return resolve({ERROR: 'NO-IMAGE-FOUND'})
             }
             //return res.status(500).end("Internal Server Error.")
             //return reject(`\n[ERROR_getTag]::No tag found.\n`)
@@ -451,13 +466,17 @@ var getTag = async (musicName) => {
                 //if(err.errno === -4058) return res.status(404).end("No Files Found.")
                 //return res.status(500).end("Internal Server Error.")
                 //return reject(`\n[ERROR_getTag]::${err.message}\n`)
-                return reject(`[ERROR_getTag]::` + err.message)
+                //return reject(`[ERROR_getTag]::` + err.message)
+                //return resolve({ERROR: "NO_TAG_FOUND"})
+                console.log(err.message)
+                return resolve({ERROR: "TAG_ERROR"})
+
             }
     
             if(tag) {
                 //console.log(tag)
                 //return res.status(200).end(JSON.stringify(tag))
-                const {title, year, image: {imageBuffer}} = tag
+                const {title, year} = tag
                 
                 const name = path.basename(musicName)
 
@@ -465,7 +484,9 @@ var getTag = async (musicName) => {
             }
             //return res.status(500).end("Internal Server Error.")
             //return reject(`\n[ERROR_getTag]::No tag found.\n`)
-            return reject(`[ERROR_getTag]::No tag found.`)
+            //return reject(`[ERROR_getTag]::No tag found.`)
+            console.log({ERROR: `NO_TAG_FOUND ${musicName}`})
+            return resolve({ERROR: "NO_TAG_FOUND"})
         })
 
 
@@ -489,7 +510,8 @@ var generateTags = (list) => {
                 //const {title, year, image: {imageBuffer}} = tag
                 //const imgUrl  .image.imageBuffer.data
                 //const imgUrl = await generateImageUrl(imageBuffer)
-                tags.push(tag)
+                const { ERROR } = tag
+                if(!ERROR) tags.push(tag)
 
                 //if(index === (array.length-1)) return resolve(tags)
                 count++
@@ -547,6 +569,7 @@ var initData = async () => {
         MUSICS_LIST_READY = true
     }
     catch(err) {
+
         MUSICS_LIST = null
         MUSICS_LIST_READY = false
         console.log('\x1b[33m%s\x1b[0m', `[ERROR_initData]` + err)

@@ -2,10 +2,13 @@
   "name": "musicplayer",
   "version": "1.0.0",
   "description": "",
-  "main": "server/server.js",
+  "main": "src/server/index.js",
   "scripts": {
     "test": "jest",
-    "devStart": "nodemon server/music_player.js"
+    "devA":"nodemon src/server/index.js",
+    "devStart": "nodemon server/music_player.js",
+    "devTest": "nodemon server/playLists.js",
+    "sample": "nodemon src/server/test/search_sample.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jimp": "^0.14.0",
     "jsonwebtoken": "^8.5.1",
     "node-addon-api": "^2.0.0",
     "node-id3": "^0.1.16"
