@@ -17,9 +17,17 @@
 
 const express = require('express');
 const list = express();
+const { _supplier } = require('../../business/api/supplier')
 
-list.get('', (req, res) => {
+list.get('/:name', (req, res) => {
+    
+    const name = req.params.name
+    if(!_supplier.isListReady()) return res.status(503).end("server busy! try later.")
+
+    
+
     res.end('search works')
+    
 })
 
 module.exports = list

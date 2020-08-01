@@ -8,7 +8,7 @@
     "devA":"nodemon src/server/index.js",
     "devStart": "nodemon server/music_player.js",
     "devTest": "nodemon server/playLists.js",
-    "sample": "nodemon src/server/test/cover_sample.js"
+    "sample": "nodemon src/server/test/search_sample.js"
   },
   "keywords": [],
   "author": "",
