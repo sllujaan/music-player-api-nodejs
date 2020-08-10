@@ -5,7 +5,8 @@ const path = require('path')
 
 
 const { _file } = require('./business/files/file')
-const { DIR_URL } = require('./business/assets')
+const { DIR_URL, TEMP_CONVERT_PATH_FFMPEG } = require('./business/assets')
+const { _audio } = require('./manifest/converter')
 
 
 var init = async () => {
@@ -22,7 +23,16 @@ var init = async () => {
     console.log(_list)
 
     //2. compress all files using ffmpeg. If a file is already compressed do not compress it agin.
-    
+    const input = DIR_URL  + _list[2];
+    const quality = '64k';
+    const output = TEMP_CONVERT_PATH_FFMPEG + _list[2] + `_${quality}`;
+    _audio.convertFiles(input, quality, output)
+    .then(data => {
+        console.log(data)
+    })
+    .catch(err => {
+        console.log(`ERROR::`, err)
+    })
 
     
     

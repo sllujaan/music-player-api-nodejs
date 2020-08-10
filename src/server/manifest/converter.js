@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-import { exec } from 'child_process'
+const { exec } = require('child_process')
 
-exec('dir', (err, stdout, stderr) => {
-    if(err) throw err;
+// exec('dir', (err, stdout, stderr) => {
+//     if(err) throw err;
 
-    console.log(`stdout: `, stdout);
-    console.log(`stderr: `, stderr);
-})
+//     console.log(`stdout: `, stdout);
+//     console.log(`stderr: `, stderr);
+// })
 
 
 class Audio {
     constructor() {}
     
-    convertFiles(filesPath, quality) { return convert(filesPath, quality) }
+    convertFiles(filesPath, quality, ouputPath) { return convert(filesPath, quality, ouputPath) }
 
 }
 
 const _audio = new Audio()
 
 
-const convert = (filePath, quality) => {
+const convert = (filePath, quality, ouputPath) => {
     return new Promise((resolve, reject) => {
-        exec('ffmpeg -version', (err, stdout, stderr) => {
+        const command = `ffmpeg -i "${filePath}" -map 0:a:0 -b:a ${quality} "${ouputPath}.mp4"`
+        //console.log(command)
+        exec(command, (err, stdout, stderr) => {
             if(err) reject(err);
             if(stdout) resolve(stdout)
             reject(stderr)
-        })        
+        })
     })
 }
 
