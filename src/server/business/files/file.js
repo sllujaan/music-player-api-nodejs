@@ -58,6 +58,11 @@ class FILE {
      * @param {string} savePath 
      */
     compressImage = async (buffer, savePath) => {
+
+        //check if file already exist------
+        if(this.isFileExists(savePath)) return;
+
+        //now file does not exist compress it and save.
         Jimp.read(buffer)
         .then(image => {
             // Do stuff with the image.
@@ -87,6 +92,15 @@ class FILE {
                 resolve(data)
             })
         })
+    }
+
+    /**
+     * check for a file wheather exists or not.
+     * @param {string} path 
+     */
+    isFileExists = (path) => {
+        if(fs.existsSync(path)) return true;
+        return false;
     }
 
 }

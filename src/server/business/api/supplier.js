@@ -26,7 +26,7 @@ class Supplier extends DATA  {
 
     getList() {return super.getList() }
     isListReady() { return super.isListReady() }
-
+    initList() { return super.initList() }
     getImage(name) { return super.readImage(name) }
 }
 

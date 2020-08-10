@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
- const path = require('path')
+const express = require('express');
+const manifest = express();
+const { _supplier } = require('../../business/api/supplier')
 
 
-const CURRENT_DIR = path.join(__dirname, '..')
-const PATH = CURRENT_DIR.replace(/\\/gi, '/')
-const assets = PATH + '/assets/'
-const COMPRESSED_IMAGES_PATH = assets + '/images/compressed/'
-const MANIFESTS_PATH = assets + '/manifests/'
-const DIR_URL = assets+'music/'
-const FILE_EXTENSIONS_REGEX = /.mp3|wma/gi
+manifest.get('/:name*', (req, res) => {
+    res.end("manifest works!")
+})
 
-console.log(DIR_URL)
-module.exports = {DIR_URL, FILE_EXTENSIONS_REGEX, COMPRESSED_IMAGES_PATH, MANIFESTS_PATH}
+
+module.exports = manifest

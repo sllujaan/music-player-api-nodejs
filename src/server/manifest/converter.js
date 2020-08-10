@@ -15,22 +15,34 @@
  * limitations under the License.
  */
 
-const express = require('express');
-const route = express();
+import { exec } from 'child_process'
 
-route.use('/list', require('./list'))
-route.use('/list/cover', require('./cover'))
-route.use('/list/search', require('./search'))
-route.use('/list/albums', require('./albums'))
-route.use('/list/manifest', require('./manifest'))
+exec('dir', (err, stdout, stderr) => {
+    if(err) throw err;
 
-
-
-route.get('/', (req, res) => {
-    res.end('root works')
-})
-route.get('*', (req, res) => {
-    res.end('not found works')
+    console.log(`stdout: `, stdout);
+    console.log(`stderr: `, stderr);
 })
 
-module.exports = route
+
+class Audio {
+    constructor() {}
+    
+    convertFiles(filesPath, quality) { return convert(filesPath, quality) }
+
+}
+
+const _audio = new Audio()
+
+
+const convert = (filePath, quality) => {
+    return new Promise((resolve, reject) => {
+        exec('ffmpeg -version', (err, stdout, stderr) => {
+            if(err) reject(err);
+            if(stdout) resolve(stdout)
+            reject(stderr)
+        })        
+    })
+}
+
+module.exports = {_audio}

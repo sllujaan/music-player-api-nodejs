@@ -16,12 +16,12 @@
  */
 
 
-const { _file } = require('../business/files/file')
-const { DIR_URL } = require('../business/assets')
-const { _validator } = require('../validator/validator')
+const { _file } = require('../business/files/file');
+const { DIR_URL } = require('../business/assets');
+const { _validator } = require('../validator/validator');
 
-var LIST = [1, 2, 3]
-var IS_LIST_READY = true
+var LIST = [1, 2, 3];
+var IS_LIST_READY = true;
 
 const _getList = () => {
     if(IS_LIST_READY) return LIST
@@ -41,15 +41,13 @@ const initList = async () => {
         IS_LIST_READY = false
         //reading the directory and getting files names
         const _list = await _file.readDir(DIR_URL); //returns an array
-        if(_list && _list.length === 0) return
-        //reading tag for each file
-        _list.forEach(async (name) => {
-            const tag = await _file.readTag(DIR_URL, name)
-            if(tag && Object.keys(tag).length > 0) tempList.push(tag)
-        });
-        //now assign temporaray list to global list
-        IS_LIST_READY = true
+        if(_list && _list.length === 0) throw new Error('list is empty');
+        //reading tag for each file        
+        tempList = await getTags(_list)
+        
         LIST = tempList
+        IS_LIST_READY = true
+        console.log('list initiated')
     }
     catch(err) {
         IS_LIST_READY = false
@@ -84,9 +82,24 @@ const searchList = (LIST, arrToSearch) => {
 }
 
 
+/**
+ * reads the tag of files and strores in an array
+ * @param {Array} pathList 
+ * @returns {Prom} An array of tags.
+ */
+const getTags = async (pathList) => {
+    var tempList = []
+    for(const name of pathList ) {
+        const tag = await _file.readTag(DIR_URL, name);
+        if(tag && Object.keys(tag).length > 0) tempList.push(tag);
+    }
+    //console.log('li ===> ', tempList.length)
+    return tempList
+}
+
 
 
 initList()
-console.log('list initiated')
 
-module.exports = {_getList, IS_LIST_READY, isListReady, searchList}
+
+module.exports = {_getList, IS_LIST_READY, isListReady, searchList, initList}
