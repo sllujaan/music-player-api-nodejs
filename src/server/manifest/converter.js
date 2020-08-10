@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const { exec } = require('child_process')
+const { exec, fork } = require('child_process')
 
 // exec('dir', (err, stdout, stderr) => {
 //     if(err) throw err;
@@ -44,7 +44,14 @@ const convert = (filePath, quality, ouputPath) => {
             if(stdout) resolve(stdout)
             reject(stderr)
         })
+
+        process.on('message', m => {
+            console.log('message: ', m)
+        })
+
     })
+
+    
 }
 
 module.exports = {_audio}
