@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-const { exec, fork } = require('child_process')
 
+const { exec, fork } = require('child_process')
+const fs = require('fs')
+const { MANIFESTS_PATH } = require('../business/assets')
 // exec('dir', (err, stdout, stderr) => {
 //     if(err) throw err;
 
@@ -30,28 +32,51 @@ class Audio {
     
     convertFiles(filesPath, quality, ouputPath) { return convert(filesPath, quality, ouputPath) }
 
+    gererateManifest(input, output) { return getMediaManifest(input, output); }
+
+    isManifestExists(name) { return isManifest(name); }
 }
 
-const _audio = new Audio()
+
 
 
 const convert = (filePath, quality, ouputPath) => {
     return new Promise((resolve, reject) => {
         const command = `ffmpeg -i "${filePath}" -map 0:a:0 -b:a ${quality} "${ouputPath}.mp4"`
-        //console.log(command)
+        console.log(command)
         exec(command, (err, stdout, stderr) => {
             if(err) reject(err);
             if(stdout) resolve(stdout)
-            reject(stderr)
+            resolve(stderr)
         })
-
-        process.on('message', m => {
-            console.log('message: ', m)
-        })
-
     })
-
-    
 }
+
+
+const getMediaManifest = (inputPath, ouputPath) => {
+    return new Promise((resolve, reject) => {
+        const command = `packager in="${inputPath}",stream=audio,output="${ouputPath}.mp4" --mpd_output ${ouputPath}.mpd --min_buffer_time 3 --segment_duration 3"`
+        console.log(command)
+        exec(command, (err, stdout, stderr) => {
+            if(err) reject(err);
+            if(stdout) resolve(stdout)
+            resolve(stderr)
+        })
+    })
+}
+
+
+const isManifest = async (name) => {
+    return new Promise((resolve, reject) => {
+        fs.exists( MANIFESTS_PATH + name, (exists) => {
+            if(exists) resolve(true);
+            reject(false);
+        })
+    })
+}
+
+
+
+const _audio = new Audio()
 
 module.exports = {_audio}
