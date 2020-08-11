@@ -16,9 +16,10 @@
  */
 
 
-const { exec, fork } = require('child_process')
-const fs = require('fs')
-const { MANIFESTS_PATH } = require('../business/assets')
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path')
+const { MANIFESTS_PATH, TEMP_CONVERT_PATH_FFMPEG } = require('../business/assets');
 // exec('dir', (err, stdout, stderr) => {
 //     if(err) throw err;
 
@@ -30,11 +31,14 @@ const { MANIFESTS_PATH } = require('../business/assets')
 class Audio {
     constructor() {}
     
-    convertFiles(filesPath, quality, ouputPath) { return convert(filesPath, quality, ouputPath) }
+    convertFile(filePath, quality, ouputPath) { return convert(filePath, quality, ouputPath) }
 
     gererateManifest(input, output) { return getMediaManifest(input, output); }
 
     isManifestExists(name) { return isManifest(name); }
+
+    deleteTempDirFiles() {return deleteTempFiles()}
+
 }
 
 
@@ -42,12 +46,13 @@ class Audio {
 
 const convert = (filePath, quality, ouputPath) => {
     return new Promise((resolve, reject) => {
+        if(!filePath || !quality || !ouputPath) return reject('all parameters are required.')
         const command = `ffmpeg -i "${filePath}" -map 0:a:0 -b:a ${quality} "${ouputPath}.mp4"`
         console.log(command)
         exec(command, (err, stdout, stderr) => {
-            if(err) reject(err);
-            if(stdout) resolve(stdout)
-            resolve(stderr)
+            if(err) return reject(err);
+            if(stdout) return resolve(stdout);
+            if(stderr) return resolve(stderr);
         })
     })
 }
@@ -75,6 +80,22 @@ const isManifest = async (name) => {
     })
 }
 
+const deleteTempFiles = async () => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(TEMP_CONVERT_PATH_FFMPEG, (err, files) => {
+            if(err) return reject(err);
+
+            for(const file of files) {
+                fs.unlink(path.join(TEMP_CONVERT_PATH_FFMPEG, file), err => {
+                    return reject(err)
+                })
+            }
+
+            return resolve('files deleted successfully.')
+        })
+    })
+    
+}
 
 
 const _audio = new Audio()
