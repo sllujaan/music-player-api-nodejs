@@ -39,6 +39,8 @@ class Audio {
 
     deleteTempDirFiles() {return deleteTempFiles()}
 
+    createDir(path, name) {return createDirectory(path, name);}
+
 }
 
 
@@ -93,6 +95,21 @@ const deleteTempFiles = async () => {
 
             return resolve('files deleted successfully.')
         })
+    })
+    
+}
+
+const createDirectory = (fullPath, name) => {
+    return new Promise((resolve, reject) => {
+        const pathName = fullPath+"/"+name
+        if(!fs.existsSync(pathName)) {
+            fs.mkdir(pathName, err => {
+                if(err) return reject(`failed to created dir: ${pathName}`)
+                return resolve('created.')
+            })
+        }
+
+        return resolve('already exists')
     })
     
 }

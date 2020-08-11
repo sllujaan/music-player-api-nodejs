@@ -40,12 +40,28 @@ var init = async () => {
     if(!emptied) return;
     console.log('ffmpeg folder emptied.')
 
+    //4. created empty directories for file that are in directories.
+    promises = [];
+    promises = _list.map(name => {
+        console.log(path.parse(name).dir)
+        const dir = path.parse(name).dir
+        if(dir && dir !== '/') return _audio.createDir(TEMP_CONVERT_PATH_FFMPEG, dir).catch(err => err)
+    })
+
+    const dirResponse = await Promise.all(promises)
+    console.log(dirResponse)
+
+
+
+    //5. compress all files using ffmpeg. If a file is already compressed do not compress it agin.
+
     promises = [];
     promises = data.map((isManifest, index) => {
         if(isManifest === false) {
             console.log(_list[index])
             //convert files in asyncronously
-            return _audio.convertFile().catch(err => err)
+            return _audio.convertFile(DIR_URL+_list[index], '64k', TEMP_CONVERT_PATH_FFMPEG + _list[index] + '_64kbps')
+            .catch(err => console.log(err))
         }
     })
 
