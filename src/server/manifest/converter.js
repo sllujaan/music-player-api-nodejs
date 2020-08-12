@@ -49,8 +49,9 @@ class Audio {
 const convert = (filePath, quality, ouputPath) => {
     return new Promise((resolve, reject) => {
         if(!filePath || !quality || !ouputPath) return reject('all parameters are required.')
+        //ouputPath = 
         const command = `ffmpeg -i "${filePath}" -map 0:a:0 -b:a ${quality} "${ouputPath}.mp4"`
-        console.log(command)
+        //console.log(command)
         exec(command, (err, stdout, stderr) => {
             if(err) return reject(err);
             if(stdout) return resolve(stdout);
@@ -62,8 +63,13 @@ const convert = (filePath, quality, ouputPath) => {
 
 const getMediaManifest = (inputPath, ouputPath) => {
     return new Promise((resolve, reject) => {
-        const command = `packager in="${inputPath}",stream=audio,output="${ouputPath}.mp4" --mpd_output ${ouputPath}.mpd --min_buffer_time 3 --segment_duration 3"`
-        console.log(command)
+        
+        inputPath = path.normalize(inputPath);
+        ouputPath = path.normalize(ouputPath);
+
+        const command = `packager in="${inputPath}",stream=audio,output="${ouputPath}.mp4" --mpd_output "${ouputPath}.mpd" --min_buffer_time 3 --segment_duration 3"`
+
+        //console.log(command + '\n\n')
         exec(command, (err, stdout, stderr) => {
             if(err) reject(err);
             if(stdout) resolve(stdout)
@@ -75,6 +81,7 @@ const getMediaManifest = (inputPath, ouputPath) => {
 
 const isManifest = async (name) => {
     return new Promise((resolve, reject) => {
+        console.log(MANIFESTS_PATH + name + '\n')
         fs.exists( MANIFESTS_PATH + name, (exists) => {
             if(exists) resolve(true);
             reject(false);
@@ -89,11 +96,11 @@ const deleteTempFiles = async () => {
 
             for(const file of files) {
                 fs.unlink(path.join(TEMP_CONVERT_PATH_FFMPEG, file), err => {
-                    return reject(err)
+                    reject(err)
                 })
             }
 
-            return resolve('files deleted successfully.')
+            resolve('files deleted successfully.')
         })
     })
     
