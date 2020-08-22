@@ -1,11 +1,10 @@
 const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 8080;
-const path = require('path')
 
 
 const { _file } = require('./business/files/file')
-const { DIR_URL, TEMP_CONVERT_PATH_FFMPEG, MANIFESTS_PATH } = require('./business/assets')
+const { TEMP_DIR_URL, TEMP_CONVERT_PATH_FFMPEG, MANIFESTS_PATH } = require('./business/assets')
 const { _audio } = require('./manifest/converter')
 
 
@@ -20,13 +19,16 @@ var init = async () => {
     //4. failed conversions and manifests--
 
 
+
+    //array
     var FAILED_CONVERSIONS = [];
     var FAILED_MANIFESTS = [];
+    var FAILED_DIR_CREATIONS = [];
 
 
     //implementation of the above steps--
     //1. list of all files.
-    const _list = await _file.readDir(DIR_URL);
+    const _list = await _file.readDir(TEMP_DIR_URL);
     console.log(_list)
 
     //const _list = ['Alan Walker-The Spectre.mp3', 'Walker/Alan Walker-The Spectre.mp3']
@@ -47,38 +49,57 @@ var init = async () => {
     // console.log('ffmpeg folder emptied.')
 
 
-    //4. created empty directories for file that are in directories.
-    promises = [];
-    promises = _list.map(name => {
-        const dir = path.parse(name).dir
-        if(dir && dir !== '/') return _audio.createDir(TEMP_CONVERT_PATH_FFMPEG, dir).catch(err => err);
-    })
+    //4. creating empty directories for file that are in directories.
+    console.log('\n\nCreating directories.....');
+    // promises = [];
+    // promises = _list.map(name => {
+    //     const dir = path.parse(name).dir
+    //     if(dir && dir !== '/') return _audio.createDir(TEMP_CONVERT_PATH_FFMPEG, path.dirname(dir)).catch(err => {FAILED_DIR_CREATIONS.push(err)});
+    // })
 
-    const dirResponse = await Promise.all(promises)
-    
+    // const dirResponse = await Promise.all(promises)
+    // if(FAILED_DIR_CREATIONS.length > 0) {
+    //     // console.log(FAILED_DIR_CREATIONS)
+    //     // console.log('\n\n')
+    //     console.log(`${FAILED_DIR_CREATIONS.length} directories creation failed.`);
+    // }
+    // else {console.log('All directories created successfully.');}
+
+    const dirCloneSuccess = await _audio._cloneDirsTo_ffmpeg().catch(err => {console.log('Some direcotires creation failed! LOG => ', err);})
+    if(dirCloneSuccess) console.log('All directories cloned successfully.\n\n');
 
 
     //5. compress all files using ffmpeg. If a file is already compressed do not compress it agin.
     console.log('----files conversion [make sure you deleted all files in ffmeg output folder]----')
     console.log('converting files.....')
-    promises = [];
-    promises = data.map((isManifest, index) => {
+    // promises = [];
+    // promises = data.map((isManifest, index) => {
+    //     if(isManifest === false) {
+    //         //console.log(_list[index])
+    //         //convert files in asyncronously
+    //         return _audio.convertFile(DIR_URL+_list[index], '64k', TEMP_CONVERT_PATH_FFMPEG + _list[index] + '_64kbps')
+    //         .catch(err => {FAILED_CONVERSIONS.push(err)})
+    //     }
+    // })
+
+    // const converterResponse = await Promise.all(promises)
+
+    //converting files in sequence order------
+    var processedFiles = 0;
+    for(const index of data.keys()) {
+        const isManifest = data[index];
         if(isManifest === false) {
-            //console.log(_list[index])
-            //convert files in asyncronously
-            return _audio.convertFile(DIR_URL+_list[index], '64k', TEMP_CONVERT_PATH_FFMPEG + _list[index] + '_64kbps')
+            await _audio.convertFile(TEMP_DIR_URL+_list[index], '64k', TEMP_CONVERT_PATH_FFMPEG + _list[index] + '_64kbps')
             .catch(err => {FAILED_CONVERSIONS.push(err)})
+            console.log(`processed Files => ${processedFiles+=1}`);
         }
-    })
+    }
 
-    const converterResponse = await Promise.all(promises)
-
-    console.log(FAILED_CONVERSIONS)
-    console.log('\n\n')
+    //console.log(FAILED_CONVERSIONS)
+    //console.log('\n\n')
 
     if(FAILED_CONVERSIONS.length > 0) {
-        // console.log(FAILED_CONVERSIONS)
-        // console.log('\n\n')
+        console.log(FAILED_CONVERSIONS, '\n\n');
         console.log(`${FAILED_CONVERSIONS.length} convertion/s failed.`)
     }
     else {console.log('All convertions performed successfully.')}
@@ -88,79 +109,41 @@ var init = async () => {
     // const input = TEMP_CONVERT_PATH_FFMPEG  + _list[0] + '_64k.mp4';
     // const quality = '64k';
     // const output = MANIFESTS_PATH + _list[0] + `_${quality}`;
+    console.log('\n\ngenerating manifests.....')
+    // promises = [];
+    // promises = _list.map(name => {
 
-    console.log('generating manifests.....')
-    promises = [];
-    promises = _list.map(name => {
+    //     const input = TEMP_CONVERT_PATH_FFMPEG + name + '_64kbps.mp4';
+    //     const quality = '64kbps';
+    //     const output = MANIFESTS_PATH + name + `_${quality}`;
 
+    //     //3. generate manifest. it will gerneate .mpd + .mp4 files.
+    //     _audio.gererateManifest(input, output).catch(err => {FAILED_MANIFESTS.push(err.message)})
+
+    // })
+
+    // const manifestsResponse = await Promise.all(promises)
+
+    var processedManifests = 0;
+    //generating manifests sequantially--
+    for(const index of _list.keys()) {
+        const name = _list[index];
         const input = TEMP_CONVERT_PATH_FFMPEG + name + '_64kbps.mp4';
         const quality = '64kbps';
         const output = MANIFESTS_PATH + name + `_${quality}`;
 
-        //3. generate manifest. it will gerneate .mpd + .mp4 files.
-        _audio.gererateManifest(input, output).catch(err => {FAILED_MANIFESTS.push(err.message)})
+        //check if file exists in ffmpeg folder.
+        if(!_audio._isFile(input)) continue;
 
-    })
-
-    const manifestsResponse = await Promise.all(promises)
+        await _audio.gererateManifest(input, output).catch(err => {FAILED_MANIFESTS.push(err.message)})
+        console.log(`processed Files => ${processedManifests+=1}`);
+    }
     
     if(FAILED_MANIFESTS.length > 0) {
-        // console.log(FAILED_MANIFESTS)
-        // console.log('\n\n')
-        console.log(`${FAILED_MANIFESTS.length} manifests failed to be generated`)
+        console.log(FAILED_MANIFESTS, '\n\n')
+        console.log(`${FAILED_MANIFESTS.length} manifests failed to be generated!`)
     }
     else {console.log('manifests generated successfully.')}
-
-
-    // const input = TEMP_CONVERT_PATH_FFMPEG + _list[0] + '_64kbps.mp4';
-    // const quality = '64k';
-    // const output = MANIFESTS_PATH + _list[0] + `_${quality}`;
-
-    // //3. generate manifest. it will gerneate .mpd + .mp4 files.
-    // _audio.gererateManifest(input, output)
-    // .then(data => {
-    //     console.log(data)
-    // })
-    // .catch(err => {
-    //     console.log(`ERROR::>>`, err)
-    //     FAILED_MANIFESTS.push(err)
-    // })
-
-
-
-    //const mpdsPath = ['/f/abc.mpd', '/abc.mpd', 'new.mpd']
-
-
-    // var promises = [];
-
-    // promises =  mpdsPath.map(path => {
-    //     return _audio.isManifestExists(path).catch(err => err);
-    // })
-
-    // const data = await Promise.all(promises)
-    // console.log(data)
-    
-    
-    
-    // .then(data => {
-    //     console.log(data)
-    // })
-    // .catch(err => {
-    //     console.log(`ERROR ALL::`, err.message)
-    // })
-
-    //const isManifest = _audio.isManifestExists('/f/abc.mpd');
-    //console.log(isManifest)
-
-
-
-
-    
-
-
-    //3. generate manifest. it will gerneate .mpd + .mp4 files.
-
-
     
     
 }

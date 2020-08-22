@@ -19,7 +19,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path')
-const { MANIFESTS_PATH, TEMP_CONVERT_PATH_FFMPEG } = require('../business/assets');
+const { TEMP_DIR_URL, DIR_URL, MANIFESTS_PATH, TEMP_CONVERT_PATH_FFMPEG } = require('../business/assets');
 // exec('dir', (err, stdout, stderr) => {
 //     if(err) throw err;
 
@@ -39,7 +39,11 @@ class Audio {
 
     deleteTempDirFiles() {return deleteTempFiles()}
 
-    createDir(path, name) {return createDirectory(path, name);}
+    createDir(path, name) {return createDirectory_async(path, name);}
+
+    _cloneDirsTo_ffmpeg() {return cloneDirectories();}
+
+    _isFile(filePath) {return isFileExists(filePath);}
 
 }
 
@@ -49,6 +53,10 @@ class Audio {
 const convert = (filePath, quality, ouputPath) => {
     return new Promise((resolve, reject) => {
         if(!filePath || !quality || !ouputPath) return reject('all parameters are required.')
+
+        //resolving paths--
+        filePath = reslovePath(filePath);
+        ouputPath = reslovePath(ouputPath);
         //ouputPath = 
         const command = `ffmpeg -i "${filePath}" -map 0:a:0 -b:a ${quality} "${ouputPath}.mp4"`
         //console.log(command)
@@ -108,10 +116,12 @@ const deleteTempFiles = async () => {
 
 const createDirectory = (fullPath, name) => {
     return new Promise((resolve, reject) => {
+        console.log('dir method called =>');
         const pathName = fullPath+"/"+name
         if(!fs.existsSync(pathName)) {
             fs.mkdir(pathName, err => {
                 if(err) return reject(`failed to created dir: ${pathName}`)
+                console.log('dir created => ', pathName);
                 return resolve('created.')
             })
         }
@@ -119,6 +129,94 @@ const createDirectory = (fullPath, name) => {
         return resolve('already exists')
     })
     
+}
+
+const getAllDirectories = (pathName, directories = null) => {
+    
+    directories = directories || [];
+
+    fs.readdirSync(pathName, {withFileTypes: true})
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => {
+        const dirPath = path.join(pathName, dirent.name);
+        handlePushPaths(dirPath, directories);
+        getAllDirectories(dirPath, directories);
+    });
+
+    return directories;
+}
+
+const handlePushPaths = (dirPath, directories) => {
+    
+    const regex = new RegExp(TEMP_DIR_URL, 'gi');
+    const path_F_slash = reslovePath_F_slash(dirPath);
+    const removedMusicDir = path_F_slash.replace(regex, "");
+    directories.push(removedMusicDir);
+}
+
+
+const cloneDirectories = () => {
+    
+    return new Promise((resolve, reject) => {
+        var FAILD_DIR_CREATIONS = [];
+        const dirPaths = getAllDirectories(TEMP_DIR_URL);
+
+        
+        dirPaths.forEach(dirName => {
+            //console.log( TEMP_CONVERT_PATH_FFMPEG + dirName);
+            //console.log(reslovePath(TEMP_CONVERT_PATH_FFMPEG + dirName))
+            const dirUrl = reslovePath(TEMP_CONVERT_PATH_FFMPEG + dirName);
+            createDirectory_async(dirUrl).catch(err => FAILD_DIR_CREATIONS.push(err));
+        })
+
+        if(FAILD_DIR_CREATIONS.length > 0) return reject(FAILD_DIR_CREATIONS);
+        return resolve('directories cloned successfully');
+
+    }) 
+}
+
+
+const createDirectory_async = (pathName) => {
+    return new Promise((resolve, reject) => {
+
+        //resolving paths--
+        pathName = reslovePath(pathName);
+
+        if(!fs.existsSync(pathName)) {
+
+            try{
+                fs.mkdirSync(pathName);
+                return resolve('created.');
+            }
+            catch(err) {
+                return reject(`failed to create dir: ${pathName}`)
+            }
+        }
+
+        return resolve('already exists')
+    })
+}
+
+const reslovePath = (pathName) => {
+    const newPath = pathName.replace(/(\/)+/gi, "\\");
+    const normalized = path.normalize(newPath);
+    return normalized;
+}
+
+const reslovePath_F_slash = (pathName) => {
+    const newPath = pathName.replace(/(\\)+/gi, "/");
+    return newPath;
+}
+
+const isFileExists = (filePath) => {
+    try{
+        if(fs.existsSync(filePath)) return true;
+        return false;
+    }
+    catch(err) {
+        console.log("FILE::ERROR => ", err);
+        return false;
+    }
 }
 
 

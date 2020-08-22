@@ -25,7 +25,8 @@ const COMPRESSED_IMAGES_PATH = assets + '/images/compressed/';
 const MANIFESTS_PATH = assets + '/manifests/';
 const TEMP_CONVERT_PATH_FFMPEG = assets + '/TEMP-ffmpeg/';
 const DIR_URL = assets+'music/';
+const TEMP_DIR_URL = assets+'tempMusic/';
 const FILE_EXTENSIONS_REGEX = /.mp3|wma/gi;
 
-console.log(DIR_URL);
-module.exports = {DIR_URL, FILE_EXTENSIONS_REGEX, COMPRESSED_IMAGES_PATH, MANIFESTS_PATH, TEMP_CONVERT_PATH_FFMPEG}
+//console.log(DIR_URL);
+module.exports = {DIR_URL, FILE_EXTENSIONS_REGEX, COMPRESSED_IMAGES_PATH, MANIFESTS_PATH, TEMP_CONVERT_PATH_FFMPEG, TEMP_DIR_URL}
